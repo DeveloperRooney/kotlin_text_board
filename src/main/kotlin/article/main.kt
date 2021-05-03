@@ -5,7 +5,7 @@ fun main() {
     var articleController = ArticleController()
     var userController = UserController()
 
-    articleController.testArticle()
+    articleController.creatTestArticle()
 
     userController.testUser()
 
@@ -13,13 +13,13 @@ fun main() {
     println("=== 게시판 프로그램 시작 ===")
 
     var loginCheck = false
-    var loginUserName = ""
+    var loginUserName : String? = ""
 
     while(true) {
 
         if (loginCheck == true) {
             print("${loginUserName} : ")
-        }else {
+        } else {
             print("명령어 입력 : ")
         }
 
@@ -44,98 +44,69 @@ fun main() {
         }
 
 
-        // 게시판 관련
-        if (actionPath == "/article/write") {
+        when (actionPath) {
 
-            if (loginCheck == false) {
-                println("로그인 후에 이용 가능합니다.")
-                continue
+
+            // 게시판 글 관련
+            "/article/write" -> {
+                articleController.write(loginCheck, loginUserName)
+
             }
 
-            articleController.addArticle(loginUserName)
+            "/article/delete" -> {
+                articleController.delete(loginCheck, paramMap["idx"]!!.toInt())
 
-        }
-
-
-        else if (actionPath.startsWith("/article/modify")) {
-
-            if (loginCheck == false) {
-                println("로그인 후에 이용 가능합니다.")
-                continue
             }
 
-        }
+            "/article/modify" -> {
+                articleController.modify(loginCheck, paramMap["idx"]!!.toInt())
 
-
-        else if (actionPath.startsWith("/article/delete")) {
-
-            if (loginCheck == false) {
-                println("로그인 후에 이용 가능합니다.")
-                continue
             }
 
-        }
+            "/article/list" -> {
+                if (paramMap["page"] == null) {
+                    articleController.list()
+                } else if (paramMap["page"] != null) {
+                    articleController.listPaging(paramMap["page"]!!.toInt())
+                }
 
-
-
-        else if (actionPath.startsWith("/article/list") && paramMap["page"] == null) {
-
-            if (loginCheck == false) {
-                println("로그인 후에 이용 가능합니다.")
-                continue
             }
 
-            articleController.articleList()
+            // 유저 관련
 
-        }
-
-        else if (actionPath.startsWith("/article/list") && paramMap["page"] != null) {
-
-            if (loginCheck == false) {
-                println("로그인 후에 이용 가능합니다.")
-                continue
+            "/user/join" -> {
+                userController.join()
             }
 
-            var page = paramMap["page"]!!.toInt()
+            "/user/login" -> {
+                loginUserName =  userController.login()
 
-            articleController.articleListPaging(page)
-
-        }
-
-
-
-        // 유저 관련
-
-        else if (actionPath == "/user/join") {
-            userController.joinUser()
-        }
-
-        else if (actionPath == "/user/login") {
-
-            while(true) {
-                var login = userController.userLogin()
-
-                if (login != null) {
+                if (loginUserName != null) {
                     loginCheck = true
-                    loginUserName = login
-                    break
+                }else {
+                    false
                 }
             }
+
+            "/user/logout" -> {
+                loginCheck = false
+            }
+
+
+            // 시스템 종료
+
+            "/system/exit" -> {
+                println("=== 게시판 프로그램 종료 ===")
+                break
+            }
+
+
+            else -> {
+                println("존재하지 않는 명령어입니다.")
+
+            }
+
+
         }
-
-        else if (actionPath == "/user/logout") {
-
-            loginCheck = false
-            println("로그아웃되었습니다.")
-
-        }
-
-
-
-        else {
-            println("존재하지 않는 명령어입니다.")
-        }
-
     }
-
 }
