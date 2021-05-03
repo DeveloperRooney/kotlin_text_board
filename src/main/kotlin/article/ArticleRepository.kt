@@ -85,21 +85,17 @@ class ArticleRepository {
 
         var reverseList = list.reversed()
 
-//        var total = reverseList.size
-//
-//        var countList = 10
-//
-//        var totalPage = total / countList
-//
-//        if (total / countList == 0) {
-//            total++
-//        }
 
-        var startIndex = ((page-1) * 10) +1
-        var endIndex = (page * 10)
+        var startIndex = (page - 1) * 10
 
-        println("글번호 / 제목 / 내용 / 작성자 / 작성일")
-        for (x in startIndex..endIndex) {
+        var lastIndex = (page * 10) -1
+
+        if (lastIndex > reverseList.size-1) {
+            lastIndex = reverseList.size-1
+        }
+
+
+        for (x in startIndex..lastIndex) {
             println("${reverseList[x].idx} / ${reverseList[x].subject} / ${reverseList[x].contents} / ${reverseList[x].userId} / ${reverseList[x].regDate}")
         }
 
